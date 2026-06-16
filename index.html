@@ -55,78 +55,7 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
 .page { display:none; }
 .page.active { display:block; }
 
-/* ── 矿工动画 ── */
-.miner-scene { position:relative; width:100%; height:200px; margin:20px 0 8px; overflow:hidden; }
-.ground { position:absolute; bottom:0; left:0; right:0; height:55px; background:linear-gradient(180deg,#1a1206,#0d0a04); border-top:2px solid #3a2a0a; }
-.ground::before { content:''; position:absolute; top:-8px; left:0; right:0; height:8px; background:repeating-linear-gradient(90deg,#2a1f08 0px,#2a1f08 20px,#1a1206 20px,#1a1206 40px); }
-.cave { position:absolute; bottom:53px; left:50%; transform:translateX(-50%); width:160px; height:95px; background:radial-gradient(ellipse at 50% 100%,#000 30%,#0d0a04 100%); border-radius:80px 80px 0 0; border:2px solid #3a2a0a; border-bottom:none; }
-
-/* 矿洞标注 */
-.cave-label { position:absolute; bottom:110px; left:50%; transform:translateX(-50%); font-size:11px; color:var(--gold); white-space:nowrap; text-align:center; font-family:'Bebas Neue',sans-serif; letter-spacing:2px; }
-.cave-arrow { position:absolute; bottom:90px; left:50%; transform:translateX(-50%); font-size:16px; animation:arrow-bounce 1s ease-in-out infinite; }
-@keyframes arrow-bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(4px)} }
-
-.ore { position:absolute; clip-path:polygon(20% 0%,80% 0%,100% 40%,80% 100%,20% 100%,0% 40%); filter:drop-shadow(0 0 6px rgba(255,215,0,0.8)); animation:ore-pulse 2s ease-in-out infinite; }
-.ore { width:22px; height:18px; background:linear-gradient(135deg,var(--gold),#ff8c00,#cc6600); }
-.ore-1{bottom:62px;left:calc(50% - 60px);animation-delay:0s}
-.ore-2{bottom:66px;left:calc(50% - 18px);animation-delay:.3s;width:16px;height:13px}
-.ore-3{bottom:59px;left:calc(50% + 28px);animation-delay:.6s;width:18px;height:15px}
-.ore-4{bottom:68px;right:38px;animation-delay:.9s;width:14px;height:11px;opacity:.7}
-.ore-5{bottom:64px;left:28px;animation-delay:1.2s;width:12px;height:10px;opacity:.6}
-@keyframes ore-pulse { 0%,100%{filter:drop-shadow(0 0 6px rgba(255,215,0,.8))} 50%{filter:drop-shadow(0 0 14px rgba(255,215,0,1));transform:scale(1.1)} }
-
-.miner { position:absolute; bottom:51px; left:50%; transform:translateX(-50%); width:60px; height:90px; }
-.helmet { position:absolute; top:0; left:50%; transform:translateX(-50%); width:36px; height:28px; background:linear-gradient(180deg,#e8a000,#cc8800); border-radius:18px 18px 4px 4px; border:2px solid #aa6600; }
-.helmet::before { content:''; position:absolute; top:6px; left:50%; transform:translateX(-50%); width:10px; height:6px; background:#fff; border-radius:3px; box-shadow:0 0 10px 4px rgba(255,255,200,.9); animation:lamp 1.5s ease-in-out infinite; }
-.helmet::after { content:''; position:absolute; bottom:-4px; left:-6px; right:-6px; height:5px; background:#cc8800; border-radius:0 0 4px 4px; }
-@keyframes lamp { 0%,100%{opacity:1;box-shadow:0 0 10px 4px rgba(255,255,200,.9)} 50%{opacity:.85;box-shadow:0 0 14px 6px rgba(255,255,200,1)} }
-.face { position:absolute; top:22px; left:50%; transform:translateX(-50%); width:28px; height:20px; background:#d4956a; border-radius:4px; }
-.face::before { content:'• •'; position:absolute; top:4px; left:50%; transform:translateX(-50%); font-size:8px; color:#333; letter-spacing:4px; white-space:nowrap; }
-.body { position:absolute; top:38px; left:50%; transform:translateX(-50%); width:32px; height:30px; background:linear-gradient(180deg,#1a5c2a,#144d22); border-radius:4px; border:1px solid #0d3d18; }
-.body::before { content:''; position:absolute; top:0; left:8px; right:8px; bottom:0; background:repeating-linear-gradient(90deg,transparent 0px,transparent 6px,rgba(255,200,0,.3) 6px,rgba(255,200,0,.3) 8px); }
-.leg-l,.leg-r { position:absolute; bottom:0; width:13px; height:22px; background:#2a2a6a; border-radius:0 0 3px 3px; }
-.leg-l { left:8px; transform-origin:top center; animation:leg-l .5s ease-in-out infinite alternate; }
-.leg-r { right:8px; transform-origin:top center; animation:leg-r .5s ease-in-out infinite alternate; }
-@keyframes leg-l { 0%{transform:rotate(-8deg)} 100%{transform:rotate(5deg)} }
-@keyframes leg-r { 0%{transform:rotate(5deg)} 100%{transform:rotate(-8deg)} }
-.leg-l::after,.leg-r::after { content:''; position:absolute; bottom:-4px; left:-2px; right:-3px; height:6px; background:#1a1a1a; border-radius:0 3px 3px 0; }
-.arm-wrap { position:absolute; top:40px; right:-20px; width:40px; height:20px; transform-origin:left center; animation:arm .5s ease-in-out infinite alternate; }
-@keyframes arm { 0%{transform:rotate(-40deg)} 100%{transform:rotate(10deg)} }
-.arm { position:absolute; top:4px; left:0; width:22px; height:10px; background:#1a5c2a; border-radius:5px; }
-.pickaxe { position:absolute; top:-4px; right:0; width:24px; height:18px; }
-.pickaxe::before { content:''; position:absolute; top:8px; left:0; right:8px; height:4px; background:#8B4513; border-radius:2px; }
-.pickaxe::after { content:''; position:absolute; top:2px; right:0; width:12px; height:14px; background:linear-gradient(135deg,#aaa,#666); clip-path:polygon(0% 40%,60% 0%,100% 30%,100% 70%,60% 100%,0% 60%); }
-.arm-l { position:absolute; top:42px; left:-14px; width:18px; height:9px; background:#1a5c2a; border-radius:5px; transform:rotate(20deg); }
-
-.spark { position:absolute; bottom:58px; left:50%; transform:translateX(-10px); pointer-events:none; }
-.spark-dot { position:absolute; width:4px; height:4px; border-radius:50%; background:var(--gold); animation:spark-fly .5s ease-out infinite; }
-.spark-dot:nth-child(1){animation-delay:0s;--dx:-12px;--dy:-16px}
-.spark-dot:nth-child(2){animation-delay:.05s;--dx:8px;--dy:-20px;width:3px;height:3px}
-.spark-dot:nth-child(3){animation-delay:.1s;--dx:-6px;--dy:-12px;width:2px;height:2px;background:#fff}
-.spark-dot:nth-child(4){animation-delay:.15s;--dx:14px;--dy:-14px;width:3px;height:3px}
-@keyframes spark-fly { 0%{transform:translate(0,0);opacity:1} 100%{transform:translate(var(--dx),var(--dy));opacity:0} }
-
-.coin { position:absolute; font-size:16px; animation:coin-fly 1.2s ease-out infinite; pointer-events:none; }
-.coin-1{bottom:66px;left:calc(50% - 30px);animation-delay:0s;--cx:-30px}
-.coin-2{bottom:66px;left:calc(50% + 10px);animation-delay:.4s;--cx:30px}
-.coin-3{bottom:66px;left:calc(50% - 10px);animation-delay:.8s;--cx:10px}
-@keyframes coin-fly { 0%{transform:translate(0,0) scale(.5);opacity:0} 20%{opacity:1} 100%{transform:translate(var(--cx),-75px) scale(1);opacity:0} }
-
-.dust { position:absolute; bottom:56px; width:6px; height:6px; border-radius:50%; background:#5a4020; opacity:0; animation:dust-puff .5s ease-out infinite; }
-.dust-1{left:calc(50% - 40px);animation-delay:0s;--dx:-20px}
-.dust-2{left:calc(50% - 10px);animation-delay:.1s;--dx:10px;width:4px;height:4px}
-.dust-3{left:calc(50% + 20px);animation-delay:.05s;--dx:25px;width:5px;height:5px}
-@keyframes dust-puff { 0%{transform:translate(0,0) scale(.5);opacity:.8} 100%{transform:translate(var(--dx),-15px) scale(2);opacity:0} }
-
-.mine-label { position:absolute; top:10px; left:50%; transform:translateX(-50%); font-size:11px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; white-space:nowrap; }
-.mining-status { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); font-size:12px; color:var(--green); letter-spacing:1px; animation:blink 1.5s ease-in-out infinite; white-space:nowrap; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
-.pile { position:absolute; bottom:54px; }
-.pile-l{left:16px} .pile-r{right:16px}
-.pile span { font-size:14px; display:inline-block; animation:pile-bob 2s ease-in-out infinite; }
-.pile span:nth-child(2){animation-delay:.3s}
-.pile span:nth-child(3){animation-delay:.6s;font-size:11px}
-@keyframes pile-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+/* Matrix Rain replaces miner animation */
 
 /* ── 英雄 ── */
 .hero { text-align:center; padding:6px 0 24px; }
@@ -259,31 +188,37 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
   <!-- ══ 首页 ══ -->
   <div class="page active" id="page-home">
 
-    <!-- 矿工动画 -->
-    <div class="miner-scene">
-      <div class="mine-label">⛏ ONE Mining · 黄金矿场</div>
-      <div class="cave-label">持ONE → 挖TWO</div>
-      <div class="cave-arrow">⬇</div>
-      <div class="cave"></div>
-      <div class="ore ore-1"></div><div class="ore ore-2"></div><div class="ore ore-3"></div>
-      <div class="ore ore-4"></div><div class="ore ore-5"></div>
-      <div class="pile pile-l"><span>💎</span><span>🪨</span><span>💎</span></div>
-      <div class="pile pile-r"><span>🪙</span><span>💎</span><span>🪙</span></div>
-      <div class="spark">
-        <div class="spark-dot"></div><div class="spark-dot"></div>
-        <div class="spark-dot"></div><div class="spark-dot"></div>
+    <!-- 矩阵雨动画 -->
+    <div id="matrixScene" style="position:relative;width:100%;height:220px;background:#000;overflow:hidden;border-radius:16px;margin:20px 0 8px">
+      <!-- 矩阵列由JS生成 -->
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,20,0,0.4) 0%,rgba(0,0,0,0.85) 100%);z-index:2;pointer-events:none"></div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);z-index:3;text-align:center">
+        <div id="matrixLogo" style="font-family:'Bebas Neue',monospace;font-size:38px;letter-spacing:6px;color:#00FF87;text-shadow:0 0 20px #00FF87,0 0 40px rgba(0,255,135,0.4)">ONE × TWO</div>
+        <div style="font-size:11px;color:rgba(0,255,135,0.6);letter-spacing:4px;margin-top:4px;font-family:monospace">MINING SYSTEM · BSC</div>
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:center;gap:20px">
+          <div style="text-align:center">
+            <div style="font-size:10px;color:rgba(0,255,135,0.5);letter-spacing:2px;font-family:monospace">持有</div>
+            <div style="font-size:16px;font-weight:bold;color:#00FF87;font-family:monospace">ONE</div>
+          </div>
+          <div style="font-size:20px;color:rgba(0,255,135,0.7);animation:arrow-glow 1.5s ease-in-out infinite">→</div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:rgba(255,215,0,0.5);letter-spacing:2px;font-family:monospace">挖出</div>
+            <div style="font-size:16px;font-weight:bold;color:#FFD700;font-family:monospace">TWO</div>
+          </div>
+        </div>
       </div>
-      <div class="dust dust-1"></div><div class="dust dust-2"></div><div class="dust dust-3"></div>
-      <div class="coin coin-1">🪙</div><div class="coin coin-2">🪙</div><div class="coin coin-3">🪙</div>
-      <div class="miner">
-        <div class="helmet"></div><div class="face"></div><div class="body"></div>
-        <div class="arm-l"></div>
-        <div class="arm-wrap"><div class="arm"></div><div class="pickaxe"></div></div>
-        <div class="leg-l"></div><div class="leg-r"></div>
-      </div>
-      <div class="ground"></div>
-      <div class="mining-status">⛏ 持ONE挖TWO · 每日自动产出</div>
+      <!-- 扫描线 -->
+      <div style="position:absolute;left:0;right:0;height:1px;background:rgba(0,255,135,0.15);z-index:2;animation:scan-line 4s linear infinite"></div>
+      <!-- 底部渐变 -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(transparent,#060810);z-index:4"></div>
     </div>
+    <style>
+      @keyframes arrow-glow { 0%,100%{opacity:0.7;text-shadow:none} 50%{opacity:1;text-shadow:0 0 10px rgba(0,255,135,0.8)} }
+      @keyframes scan-line { 0%{top:0} 100%{top:220px} }
+      .matrix-col { position:absolute; top:-100%; width:16px; display:flex; flex-direction:column; animation:matrix-fall linear infinite; }
+      @keyframes matrix-fall { 0%{top:-100%} 100%{top:100%} }
+      .matrix-char { font-size:13px; color:#00FF87; text-align:center; font-family:monospace; line-height:1.4; }
+    </style>
 
     <!-- 英雄 -->
     <div class="hero">
@@ -1163,6 +1098,38 @@ async function loadCommunity() {
 }
 
 // ── 钱包事件监听 ──────────────────────────────────────
+// ── 矩阵雨动画初始化 ─────────────────────────────────
+(function initMatrix() {
+  const scene = document.getElementById('matrixScene');
+  if (!scene) return;
+  const chars = '01アイウエオ₿ΞONETWO◈⬡░▒▓01持挖矿ONE'.split('');
+  const cols = Math.floor(scene.offsetWidth / 17) || 24;
+  for (let i = 0; i < cols; i++) {
+    const col = document.createElement('div');
+    col.className = 'matrix-col';
+    col.style.left = (i * 17) + 'px';
+    const speed = (1.8 + Math.random() * 2.5).toFixed(2);
+    col.style.animationDuration = speed + 's';
+    col.style.animationDelay = (-Math.random() * 4).toFixed(2) + 's';
+    const len = 6 + Math.floor(Math.random() * 8);
+    for (let j = 0; j < len; j++) {
+      const span = document.createElement('span');
+      span.className = 'matrix-char';
+      const isHead = j === 0;
+      span.style.opacity = isHead ? '1' : (0.1 + (1 - j/len) * 0.7).toFixed(2);
+      span.style.color = isHead ? '#ffffff' : '#00FF87';
+      span.style.textShadow = isHead ? '0 0 8px #fff, 0 0 16px #00FF87' : 'none';
+      span.textContent = chars[Math.floor(Math.random() * chars.length)];
+      // 随机改变字符
+      setInterval(() => {
+        if (Math.random() > 0.85) span.textContent = chars[Math.floor(Math.random() * chars.length)];
+      }, 100 + Math.random() * 400);
+      col.appendChild(span);
+    }
+    scene.appendChild(col);
+  }
+})();
+
 if (window.ethereum) {
   window.ethereum.on('accountsChanged', accounts => {
     if (accounts.length > 0) { userAddr = accounts[0]; onConnected(); }
