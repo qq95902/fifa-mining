@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ONE × TWO — Mining Protocol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --c1: #7B2FFF;
+  --c2: #FF2F7B;
+  --c3: #2FFFB2;
+  --gold: #FFD166;
+  --dark: #08070F;
+  --card: #0F0E1A;
+  --card2: #141228;
+  --border: rgba(123,47,255,0.2);
+  --border2: rgba(255,255,255,0.06);
+  --text: #F0EEF8;
+  --muted: #6B6880;
+  --red: #FF4D6D;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--dark);
+  color:var(--text);
+  font-family:'Space Grotesk',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── 背景粒子效果 ── */
+.bg-glow {
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(123,47,255,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 35% at 80% 70%, rgba(255,47,123,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(47,255,178,0.04) 0%, transparent 60%);
+}
+.bg-grid {
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(rgba(123,47,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123,47,255,0.04) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+
+/* ── 布局 ── */
+.wrap { position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:0 20px 100px; }
+
+/* ── 顶栏 ── */
+header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:24px 0; border-bottom:1px solid var(--border2); margin-bottom:32px;
+  position:sticky; top:0; background:rgba(8,7,15,0.9); backdrop-filter:blur(20px);
+  z-index:100; margin-left:-20px; margin-right:-20px; padding-left:20px; padding-right:20px;
+}
+.logo-wrap { display:flex; align-items:center; gap:14px; }
+.logo-icon {
+  width:40px; height:40px; border-radius:10px;
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:700; color:#fff;
+  box-shadow:0 0 20px rgba(123,47,255,0.4);
+}
+.logo-text { font-size:18px; font-weight:700; letter-spacing:-0.5px; }
+.logo-text span { background:linear-gradient(135deg,var(--c1),var(--c3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.logo-sub { font-size:11px; color:var(--muted); font-family:'Space Mono',monospace; letter-spacing:1px; margin-top:2px; }
+
+.header-right { display:flex; align-items:center; gap:12px; }
+.price-pill {
+  display:flex; align-items:center; gap:8px;
+  background:rgba(255,209,102,0.08); border:1px solid rgba(255,209,102,0.2);
+  border-radius:20px; padding:6px 14px; font-size:12px; color:var(--gold);
+  font-family:'Space Mono',monospace;
+}
+.price-dot { width:6px; height:6px; border-radius:50%; background:var(--c3); animation:blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.btn-connect {
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+  color:#fff; border:none; border-radius:10px; padding:10px 20px;
+  font-size:13px; font-weight:600; cursor:pointer; font-family:'Space Grotesk',sans-serif;
+  transition:opacity 0.2s, transform 0.1s;
+  box-shadow:0 4px 20px rgba(123,47,255,0.3);
+}
+.btn-connect:hover { opacity:0.9; }
+.btn-connect:active { transform:scale(0.97); }
+.btn-connect.connected {
+  background:var(--card2); border:1px solid var(--border);
+  color:var(--c3); font-family:'Space Mono',monospace; font-size:12px;
+  box-shadow:none;
+}
+
+/* ── 英雄区 ── */
+.hero {
+  text-align:center; padding:40px 0 48px;
+  position:relative;
+}
+.hero-tag {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(47,255,178,0.08); border:1px solid rgba(47,255,178,0.2);
+  border-radius:20px; padding:6px 16px; font-size:11px; color:var(--c3);
+  font-family:'Space Mono',monospace; letter-spacing:1px; margin-bottom:20px;
+}
+.hero h1 {
+  font-size:clamp(36px,7vw,80px); font-weight:700; line-height:1.05;
+  letter-spacing:-2px; margin-bottom:16px;
+}
+.hero h1 .grad {
+  background:linear-gradient(135deg,var(--c1) 0%,var(--c2) 50%,var(--gold) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.hero p { font-size:16px; color:var(--muted); max-width:480px; margin:0 auto 32px; line-height:1.7; }
+.hero-stats {
+  display:flex; justify-content:center; gap:40px; flex-wrap:wrap;
+  padding:24px 0; border-top:1px solid var(--border2); border-bottom:1px solid var(--border2);
+}
+.hero-stat-val { font-size:28px; font-weight:700; font-family:'Space Mono',monospace; background:linear-gradient(135deg,var(--c1),var(--c3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.hero-stat-label { font-size:11px; color:var(--muted); margin-top:4px; letter-spacing:1px; text-transform:uppercase; }
+
+/* ── 网格布局 ── */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:16px; }
+@media(max-width:768px) {
+  .grid-2 { grid-template-columns:1fr; }
+  .grid-3 { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:480px) {
+  .grid-3 { grid-template-columns:1fr; }
+}
+
+/* ── 卡片 ── */
+.card {
+  background:var(--card); border:1px solid var(--border2);
+  border-radius:20px; padding:24px; margin-bottom:16px;
+  transition:border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  animation:card-in 0.5s ease both;
+}
+.card:hover { border-color:var(--border); box-shadow:0 8px 40px rgba(123,47,255,0.1); }
+@keyframes card-in { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.card-header {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;
+}
+.card-title {
+  font-size:11px; font-weight:600; color:var(--muted); letter-spacing:1.5px;
+  text-transform:uppercase; display:flex; align-items:center; gap:8px;
+}
+.card-title::before { content:''; width:3px; height:14px; background:linear-gradient(180deg,var(--c1),var(--c2)); border-radius:2px; display:block; }
+
+/* ── 代币余额卡片 ── */
+.token-card {
+  background:var(--card); border:1px solid var(--border2);
+  border-radius:20px; padding:20px; position:relative; overflow:hidden;
+  transition:all 0.3s;
+}
+.token-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+}
+.token-card.one-card::before { background:linear-gradient(90deg,var(--c1),var(--c3)); }
+.token-card.two-card::before { background:linear-gradient(90deg,var(--c2),var(--gold)); }
+.token-card:hover { transform:translateY(-2px); box-shadow:0 12px 40px rgba(123,47,255,0.15); }
+
+.token-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-family:'Space Mono',monospace; }
+.token-amount { font-size:32px; font-weight:700; font-family:'Space Mono',monospace; letter-spacing:-1px; }
+.token-amount.one { background:linear-gradient(135deg,var(--c1),var(--c3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.token-amount.two { background:linear-gradient(135deg,var(--c2),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.token-sub { font-size:12px; color:var(--muted); margin-top:6px; }
+.token-usd { font-size:13px; color:var(--c3); font-family:'Space Mono',monospace; margin-top:4px; }
+
+/* ── 算力条 ── */
+.power-bar-wrap { margin-top:16px; }
+.power-bar-label { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px; font-family:'Space Mono',monospace; }
+.power-bar-track { height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden; }
+.power-bar-fill { height:100%; background:linear-gradient(90deg,var(--c1),var(--c3)); border-radius:3px; transition:width 1s ease; position:relative; }
+.power-bar-fill::after { content:''; position:absolute; top:0; right:0; bottom:0; width:20px; background:rgba(255,255,255,0.3); filter:blur(4px); }
+
+/* ── 倒计时 ── */
+.countdown-card {
+  background:linear-gradient(135deg,rgba(123,47,255,0.1),rgba(255,47,123,0.05));
+  border:1px solid var(--border); border-radius:20px; padding:20px;
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px;
+}
+.countdown-info { }
+.countdown-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.countdown-sub { font-size:11px; color:var(--muted); }
+.countdown-timer { font-size:28px; font-weight:700; font-family:'Space Mono',monospace; background:linear-gradient(135deg,var(--c1),var(--c3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.countdown-ready { font-size:16px; font-weight:700; color:var(--c3); font-family:'Space Mono',monospace; animation:pulse-text 1.5s ease-in-out infinite; }
+@keyframes pulse-text { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* ── 按钮 ── */
+.btn-primary {
+  width:100%; padding:16px; border:none; border-radius:12px; cursor:pointer;
+  font-size:15px; font-weight:700; font-family:'Space Grotesk',sans-serif;
+  background:linear-gradient(135deg,var(--c1),var(--c2));
+  color:#fff; transition:opacity 0.2s, transform 0.1s;
+  box-shadow:0 4px 20px rgba(123,47,255,0.3);
+  letter-spacing:0.3px;
+}
+.btn-primary:hover { opacity:0.9; }
+.btn-primary:active { transform:scale(0.98); }
+.btn-primary:disabled { opacity:0.35; cursor:not-allowed; box-shadow:none; }
+
+.btn-outline {
+  width:100%; padding:16px; border:1px solid var(--border); border-radius:12px;
+  background:transparent; color:var(--c1); cursor:pointer; font-size:15px;
+  font-weight:600; font-family:'Space Grotesk',sans-serif; transition:all 0.2s;
+}
+.btn-outline:hover { background:rgba(123,47,255,0.08); border-color:var(--c1); }
+.btn-outline:disabled { opacity:0.35; cursor:not-allowed; }
+
+.btn-sm {
+  padding:8px 16px; border-radius:8px; font-size:12px; font-weight:600;
+  cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:all 0.2s;
+  border:1px solid var(--border); background:rgba(123,47,255,0.08); color:var(--c1);
+}
+.btn-sm:hover { background:rgba(123,47,255,0.15); }
+
+.btn-sell {
+  width:100%; padding:16px; border:1px solid rgba(255,47,123,0.3); border-radius:12px;
+  background:rgba(255,47,123,0.05); color:var(--c2); cursor:pointer; font-size:15px;
+  font-weight:600; font-family:'Space Grotesk',sans-serif; transition:all 0.2s;
+}
+.btn-sell:hover { background:rgba(255,47,123,0.1); }
+.btn-sell:disabled { opacity:0.35; cursor:not-allowed; }
+
+/* ── 输入框 ── */
+.input-wrap { position:relative; margin-bottom:12px; }
+.input-field {
+  width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border2);
+  border-radius:12px; padding:14px 16px; color:var(--text); font-size:16px;
+  font-family:'Space Mono',monospace; outline:none; transition:border-color 0.2s;
+}
+.input-field:focus { border-color:var(--c1); }
+.input-field::placeholder { color:var(--muted); font-size:14px; }
+.input-suffix {
+  position:absolute; right:14px; top:50%; transform:translateY(-50%);
+  font-size:12px; color:var(--muted); font-family:'Space Mono',monospace;
+}
+.input-max {
+  position:absolute; right:14px; top:50%; transform:translateY(-50%);
+  font-size:11px; color:var(--c1); cursor:pointer; font-weight:600;
+  background:rgba(123,47,255,0.1); padding:3px 8px; border-radius:4px;
+}
+.input-max:hover { background:rgba(123,47,255,0.2); }
+
+.preview-box {
+  background:rgba(47,255,178,0.05); border:1px solid rgba(47,255,178,0.15);
+  border-radius:10px; padding:12px 16px; font-size:13px; color:var(--c3);
+  text-align:center; margin-bottom:12px; min-height:42px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Space Mono',monospace;
+}
+
+/* ── 标签页 ── */
+.tabs { display:flex; gap:4px; background:var(--card2); border-radius:12px; padding:4px; margin-bottom:20px; }
+.tab {
+  flex:1; padding:10px; text-align:center; border-radius:8px; cursor:pointer;
+  font-size:13px; font-weight:600; transition:all 0.2s; color:var(--muted); border:none; background:none;
+}
+.tab.active { background:var(--card); color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,0.3); }
+
+/* ── 推荐链接 ── */
+.ref-box {
+  background:rgba(255,255,255,0.02); border:1px dashed var(--border);
+  border-radius:12px; padding:12px 14px; display:flex; align-items:center; gap:10px;
+  margin-bottom:12px;
+}
+.ref-link-text { flex:1; font-size:11px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:'Space Mono',monospace; }
+
+/* ── 勋章 ── */
+.badge-display { text-align:center; padding:20px 0; }
+.badge-icon-large { font-size:56px; margin-bottom:12px; filter:drop-shadow(0 0 20px rgba(255,209,102,0.5)); }
+.badge-name { font-size:22px; font-weight:700; letter-spacing:2px; color:var(--gold); font-family:'Space Mono',monospace; }
+.badge-desc { font-size:12px; color:var(--muted); margin-top:6px; }
+
+.milestone-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 0; border-bottom:1px solid var(--border2); font-size:13px;
+}
+.milestone-row:last-child { border-bottom:none; }
+.milestone-done { color:var(--c3); font-weight:600; font-family:'Space Mono',monospace; }
+.milestone-next { color:var(--gold); font-weight:600; }
+.milestone-lock { color:var(--muted); }
+
+/* ── 统计格 ── */
+.stat-mini { background:rgba(255,255,255,0.02); border:1px solid var(--border2); border-radius:12px; padding:14px; text-align:center; }
+.stat-mini-val { font-size:20px; font-weight:700; font-family:'Space Mono',monospace; background:linear-gradient(135deg,var(--c1),var(--c3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.stat-mini-label { font-size:10px; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:1px; }
+
+/* ── 任务卡 ── */
+.task-card {
+  background:rgba(255,255,255,0.02); border:1px solid var(--border2);
+  border-radius:14px; padding:16px; margin-bottom:10px; transition:border-color 0.2s;
+}
+.task-card:hover { border-color:var(--border); }
+.task-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.task-name { font-size:13px; font-weight:600; }
+.task-reward { font-size:12px; color:var(--gold); font-family:'Space Mono',monospace; }
+.task-desc { font-size:11px; color:var(--muted); margin-bottom:10px; }
+.task-status { font-size:11px; padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:8px; }
+.status-pending { background:rgba(255,209,102,0.1); color:var(--gold); }
+.status-approved { background:rgba(47,255,178,0.1); color:var(--c3); }
+.status-rejected { background:rgba(255,77,109,0.1); color:var(--red); }
+.status-none { background:rgba(255,255,255,0.05); color:var(--muted); }
+.task-textarea {
+  width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--border2);
+  border-radius:8px; padding:10px 12px; color:var(--text); font-size:12px;
+  font-family:'Space Grotesk',sans-serif; outline:none; resize:vertical; min-height:60px; margin-top:6px;
+}
+.task-textarea:focus { border-color:var(--c1); }
+
+/* ── 排行榜 ── */
+.rank-row {
+  display:flex; align-items:center; gap:14px; padding:12px 0;
+  border-bottom:1px solid var(--border2);
+}
+.rank-row:last-child { border-bottom:none; }
+.rank-num {
+  width:32px; height:32px; border-radius:8px; display:flex; align-items:center;
+  justify-content:center; font-size:12px; font-weight:700; font-family:'Space Mono',monospace;
+  flex-shrink:0; background:var(--card2); color:var(--muted);
+}
+.rank-num.r1 { background:rgba(255,209,102,0.15); color:var(--gold); }
+.rank-num.r2 { background:rgba(192,192,192,0.1); color:#C0C0C0; }
+.rank-num.r3 { background:rgba(205,127,50,0.1); color:#CD7F32; }
+.rank-addr { flex:1; font-size:13px; font-family:'Space Mono',monospace; }
+.rank-badge { font-size:16px; }
+.rank-count { font-size:12px; color:var(--c3); font-family:'Space Mono',monospace; font-weight:600; }
+
+/* ── 领取记录 ── */
+.record-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 0; border-bottom:1px solid var(--border2); font-size:12px;
+}
+.record-row:last-child { border-bottom:none; }
+.record-type { color:var(--muted); font-family:'Space Mono',monospace; }
+.record-amount { font-weight:600; font-family:'Space Mono',monospace; }
+.record-time { color:var(--muted); font-size:11px; }
+
+/* ── TWO 交易区 ── */
+.swap-card {
+  background:var(--card); border:1px solid var(--border2); border-radius:20px;
+  padding:24px; margin-bottom:16px;
+}
+.swap-rate { text-align:center; padding:10px; font-size:12px; color:var(--muted); font-family:'Space Mono',monospace; }
+.swap-arrow { text-align:center; padding:6px; color:var(--muted); font-size:20px; }
+
+/* ── 底部导航 ── */
+.tab-bar {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  background:rgba(8,7,15,0.95); border-top:1px solid var(--border2);
+  backdrop-filter:blur(20px);
+  display:flex; padding:8px 0 20px;
+}
+.tab-item {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  gap:4px; cursor:pointer; border:none; background:none; padding:8px 4px;
+  color:var(--muted); font-size:10px; font-family:'Space Grotesk',sans-serif;
+  font-weight:500; transition:color 0.2s; letter-spacing:0.5px;
+}
+.tab-item.active { color:var(--c3); }
+.tab-icon { font-size:22px; transition:transform 0.2s; }
+.tab-item.active .tab-icon { transform:scale(1.1); }
+
+/* ── 页面 ── */
+.page { display:none; }
+.page.active { display:block; animation:page-in 0.3s ease; }
+@keyframes page-in { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── 横幅 ── */
+.banner {
+  display:flex; align-items:center; justify-content:space-between;
+  background:linear-gradient(135deg,rgba(123,47,255,0.1),rgba(255,47,123,0.05));
+  border:1px solid var(--border); border-radius:14px; padding:14px 18px;
+  margin-bottom:14px;
+}
+.banner-text { font-size:13px; color:var(--gold); font-weight:500; }
+.banner-text strong { color:var(--c3); font-family:'Space Mono',monospace; }
+
+/* ── 推荐人标签 ── */
+.referrer-chip {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(47,255,178,0.06); border:1px solid rgba(47,255,178,0.15);
+  border-radius:8px; padding:6px 12px; font-size:12px; color:var(--c3);
+  margin-bottom:14px; font-family:'Space Mono',monospace;
+}
+
+/* ── 减半倒计时 ── */
+.halving-row { display:flex; align-items:center; justify-content:space-between; margin-top:14px; }
+.halving-timer { font-size:20px; font-weight:700; font-family:'Space Mono',monospace; color:var(--gold); }
+
+/* ── Toast ── */
+.toast {
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+  background:var(--card2); border:1px solid var(--border); color:var(--text);
+  font-size:13px; font-weight:500; padding:12px 20px; border-radius:12px;
+  opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:300;
+  white-space:nowrap; box-shadow:0 8px 30px rgba(0,0,0,0.4);
+  max-width:90vw; text-align:center;
+}
+.toast.show { opacity:1; }
+.toast.success { border-color:rgba(47,255,178,0.3); color:var(--c3); }
+.toast.error { border-color:rgba(255,77,109,0.3); color:var(--red); }
+
+/* ── 钱包弹窗 ── */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:500;
+  display:flex; align-items:flex-end; justify-content:center; backdrop-filter:blur(4px);
+}
+.modal-sheet {
+  background:var(--card); border:1px solid var(--border2);
+  border-radius:24px 24px 0 0; padding:28px 20px 40px;
+  width:100%; max-width:480px;
+}
+.modal-handle { width:40px; height:4px; background:var(--border2); border-radius:2px; margin:0 auto 20px; }
+.modal-title { font-size:16px; font-weight:700; text-align:center; margin-bottom:6px; }
+.modal-sub { font-size:13px; color:var(--muted); text-align:center; margin-bottom:20px; }
+.wallet-option {
+  display:flex; align-items:center; gap:14px; padding:16px;
+  background:rgba(255,255,255,0.03); border:1px solid var(--border2);
+  border-radius:14px; margin-bottom:10px; cursor:pointer; transition:all 0.2s;
+}
+.wallet-option:hover { background:rgba(123,47,255,0.08); border-color:var(--border); }
+.wallet-icon { font-size:30px; width:44px; text-align:center; }
+.wallet-info { flex:1; }
+.wallet-name { font-size:14px; font-weight:600; }
+.wallet-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+.wallet-arrow { color:var(--c1); font-size:16px; }
+
+/* ── 连接提示 ── */
+.connect-prompt { text-align:center; padding:40px 0; color:var(--muted); font-size:14px; }
+.connect-prompt .icon { font-size:40px; margin-bottom:12px; }
+.locked { filter:blur(6px) brightness(0.3); pointer-events:none; user-select:none; }
+
+/* ── 全局数据 ── */
+.global-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:16px; }
+@media(min-width:480px) { .global-grid { grid-template-columns:repeat(4,1fr); } }
+.global-stat { background:var(--card2); border:1px solid var(--border2); border-radius:12px; padding:14px; text-align:center; }
+.global-val { font-size:18px; font-weight:700; font-family:'Space Mono',monospace; background:linear-gradient(135deg,var(--c1),var(--c3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.global-label { font-size:10px; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:1px; }
+
+/* ── PC端布局 ── */
+@media(min-width:900px) {
+  .pc-layout { display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start; }
+  .pc-full { grid-column:1/-1; }
+}
+
+/* ── 冻结提示 ── */
+.freeze-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(255,209,102,0.08); border:1px solid rgba(255,209,102,0.2);
+  border-radius:8px; padding:4px 10px; font-size:11px; color:var(--gold);
+  font-family:'Space Mono',monospace;
+}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="bg-grid"></div>
+
+<div class="wrap">
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-icon">O×T</div>
+      <div>
+        <div class="logo-text"><span>ONE × TWO</span></div>
+        <div class="logo-sub">MINING PROTOCOL · BSC</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="price-pill" id="priceTag" style="display:none">
+        <span class="price-dot"></span>
+        <span>TWO: $<span id="twoPrice">—</span></span>
+      </div>
+      <button class="btn-connect" id="btnConnect" onclick="connectWallet()">连接钱包</button>
+    </div>
+  </header>
+
+  <!-- ══ 首页 ══ -->
+  <div class="page active" id="page-home">
+    <div class="hero">
+      <div class="hero-tag">⛏ BSC 双代币挖矿协议</div>
+      <h1>MINE <span class="grad">TO</span> WIN</h1>
+      <p>持有 ONE · 算力挖矿产出 TWO · 减半通缩 · 三层推荐奖励</p>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val" id="h-users">—</div>
+          <div class="hero-stat-label">总用户数</div>
+        </div>
+        <div>
+          <div class="hero-stat-val" id="h-one">—</div>
+          <div class="hero-stat-label">ONE 流通量</div>
+        </div>
+        <div>
+          <div class="hero-stat-val" id="h-two">—</div>
+          <div class="hero-stat-label">TWO 流通量</div>
+        </div>
+        <div>
+          <div class="hero-stat-val" id="h-daily">100K</div>
+          <div class="hero-stat-label">每日产出</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connect-prompt" id="connectPrompt">
+      <div class="icon">🔐</div>
+      连接钱包开始挖矿
+    </div>
+
+    <div id="homeContent" class="locked">
+      <div id="referrerTag" class="referrer-chip" style="display:none">
+        ✦ 推荐人：<span id="referrerAddr">—</span>
+      </div>
+
+      <div id="taskBanner" class="banner" style="display:none">
+        <div class="banner-text">🎁 任务奖励待领取：<strong id="taskBannerAmt">0</strong> ONE</div>
+        <button class="btn-sm" onclick="claimTaskReward()">领取</button>
+      </div>
+
+      <div id="freezeBanner" style="display:none;margin-bottom:14px">
+        <span class="freeze-badge">❄️ 算力冻结中 · 今日获得的ONE次日08:00生效</span>
+      </div>
+
+      <!-- 倒计时 -->
+      <div class="countdown-card">
+        <div class="countdown-info">
+          <div class="countdown-title">距下次领取</div>
+          <div class="countdown-sub">每24小时一次 · 0.0005 BNB触发</div>
+        </div>
+        <div class="countdown-timer" id="claimCountdown">--:--:--</div>
+      </div>
+
+      <!-- 资产 -->
+      <div class="grid-2">
+        <div class="token-card one-card">
+          <div class="token-label">ONE · 母币</div>
+          <div class="token-amount one" id="oneBal">0</div>
+          <div class="token-sub">不可交易 · 挖矿算力</div>
+        </div>
+        <div class="token-card two-card">
+          <div class="token-label">TWO · 产出币</div>
+          <div class="token-amount two" id="twoBal">0</div>
+          <div class="token-usd">≈ $<span id="twoBalUsd">0.00</span></div>
+        </div>
+      </div>
+
+      <!-- 算力 -->
+      <div class="card">
+        <div class="card-title">我的算力 · 全网占比</div>
+        <div style="margin-top:14px">
+          <div class="power-bar-wrap">
+            <div class="power-bar-label">
+              <span>我的：<span id="myPowerDisplay">—</span></span>
+              <span id="powerPct">0%</span>
+            </div>
+            <div class="power-bar-track"><div class="power-bar-fill" id="powerBar" style="width:0%"></div></div>
+            <div class="power-bar-label" style="margin-top:6px;margin-bottom:0">
+              <span>全网：<span id="globalPower">—</span></span>
+              <span>待领取：<span id="pendingTwo" style="color:var(--gold)">0</span> TWO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 领取 -->
+      <div class="card">
+        <div class="card-title">每日领取</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7">
+          发送 <strong style="color:var(--c3);font-family:'Space Mono',monospace">0.0005 BNB</strong> 触发每日领取：<br>
+          获得 <strong style="color:var(--c1)">100 ONE</strong> 签到奖励 + 按算力产出 <strong style="color:var(--gold)">TWO</strong>，同时销毁等量 ONE
+        </p>
+        <button class="btn-primary" id="btnClaim" onclick="doClaim()" disabled>⚡ 一键领取（0.0005 BNB）</button>
+      </div>
+
+      <!-- 购买ONE -->
+      <div class="card">
+        <div class="card-title">购买 ONE · 获得算力</div>
+        <div class="input-wrap">
+          <input class="input-field" type="number" id="buyAmount" placeholder="输入 BNB 数量" min="0.01" step="0.01" oninput="updateBuyPreview()">
+          <span class="input-suffix">BNB</span>
+        </div>
+        <div class="preview-box" id="buyPreview">输入 BNB 查看可获得 ONE 数量</div>
+        <button class="btn-primary" id="btnBuy" onclick="doBuy()" disabled>购买 ONE</button>
+        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px;font-family:'Space Mono',monospace">
+          1 BNB = 21,000 ONE · 私募上限 150 BNB
+        </p>
+      </div>
+
+      <!-- 减半倒计时 -->
+      <div class="card">
+        <div class="card-title">减半倒计时</div>
+        <div class="halving-row">
+          <div>
+            <div style="font-size:13px;margin-bottom:4px">当前每日产出</div>
+            <div style="font-size:22px;font-weight:700;font-family:'Space Mono',monospace;background:linear-gradient(135deg,var(--gold),var(--c2));-webkit-background-clip:text;-webkit-text-fill-color:transparent"><span id="dailyMint">100,000</span> TWO</div>
+          </div>
+          <div class="halving-timer" id="halvingTimer">—</div>
+        </div>
+        <div class="power-bar-wrap" style="margin-top:14px">
+          <div class="power-bar-track"><div class="power-bar-fill" id="halvingBar" style="width:0%;background:linear-gradient(90deg,var(--gold),var(--c2))"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TWO交易 ══ -->
+  <div class="page" id="page-trade">
+    <div style="padding-top:20px">
+      <div class="card">
+        <div class="card-title">TWO 行情</div>
+        <div style="display:flex;align-items:baseline;gap:12px;margin-top:14px">
+          <div style="font-size:36px;font-weight:700;font-family:'Space Mono',monospace;background:linear-gradient(135deg,var(--c2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent">$<span id="tradePriceMain">—</span></div>
+          <div id="priceChange" style="font-size:14px;color:var(--muted);font-family:'Space Mono',monospace">—</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px;font-family:'Space Mono',monospace">
+          买入税 <span style="color:var(--c2)">10%</span> · 卖出税 <span style="color:var(--red)">15%</span> · 均到DEV钱包
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTradeTab('buy',this)">买入 TWO</button>
+        <button class="tab" onclick="switchTradeTab('sell',this)">卖出 TWO</button>
+      </div>
+
+      <!-- 买入 -->
+      <div id="trade-buy">
+        <div class="swap-card">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-family:'Space Mono',monospace">支付</div>
+          <div class="input-wrap">
+            <input class="input-field" type="number" id="swapBuyIn" placeholder="0.0" oninput="calcBuyOut()">
+            <span class="input-suffix">BNB</span>
+          </div>
+          <div class="swap-arrow">↓</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-family:'Space Mono',monospace">获得（扣除10%买入税后）</div>
+          <div class="preview-box" id="swapBuyOut">输入BNB数量预览</div>
+          <button class="btn-primary" onclick="doSwapBuy()" style="margin-top:4px">在PancakeSwap买入 TWO →</button>
+        </div>
+      </div>
+
+      <!-- 卖出 -->
+      <div id="trade-sell" style="display:none">
+        <div class="swap-card">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-family:'Space Mono',monospace">卖出</div>
+          <div class="input-wrap">
+            <input class="input-field" type="number" id="swapSellIn" placeholder="0.0" oninput="calcSellOut()">
+            <span class="input-max" onclick="setMaxSell()">MAX</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin:4px 0 4px 4px;font-family:'Space Mono',monospace">持有: <span id="sellMaxBal">0</span> TWO</div>
+          <div class="swap-arrow">↓</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-family:'Space Mono',monospace">获得（扣除15%卖出税后）</div>
+          <div class="preview-box" id="swapSellOut">输入TWO数量预览</div>
+          <button class="btn-sell" onclick="doSwapSell()" style="margin-top:4px">在PancakeSwap卖出 TWO →</button>
+        </div>
+      </div>
+
+      <div class="swap-rate" id="swapRate">实时价格加载中...</div>
+    </div>
+  </div>
+
+  <!-- ══ 我的 ══ -->
+  <div class="page" id="page-profile">
+    <div style="padding-top:20px">
+
+      <!-- 勋章 -->
+      <div class="card">
+        <div class="card-title">我的勋章</div>
+        <div class="badge-display">
+          <div class="badge-icon-large" id="badgeIcon">🔘</div>
+          <div class="badge-name" id="badgeName">暂无勋章</div>
+          <div class="badge-desc" id="badgeDesc">邀请5位好友解锁天使勋章</div>
+        </div>
+        <div>
+          <div class="milestone-row">
+            <span>🌟 天使</span>
+            <span style="font-size:11px;color:var(--muted)">5人 · +500 ONE · +5名额</span>
+            <span id="m5" class="milestone-lock">—</span>
+          </div>
+          <div class="milestone-row">
+            <span>🏅 大使</span>
+            <span style="font-size:11px;color:var(--muted)">20人 · +3000 ONE · +20名额</span>
+            <span id="m20" class="milestone-lock">—</span>
+          </div>
+          <div class="milestone-row">
+            <span>👑 超级大使</span>
+            <span style="font-size:11px;color:var(--muted)">50人 · +10000 ONE · +50名额</span>
+            <span id="m50" class="milestone-lock">—</span>
+          </div>
+          <div class="milestone-row">
+            <span>💎 传奇</span>
+            <span style="font-size:11px;color:var(--muted)">100人 · +30000 ONE · +100名额</span>
+            <span id="m100" class="milestone-lock">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 推广数据 -->
+      <div class="card">
+        <div class="card-title">推广数据</div>
+        <div class="grid-3" style="margin-top:14px">
+          <div class="stat-mini">
+            <div class="stat-mini-val" id="p-direct">0</div>
+            <div class="stat-mini-label">直推人数</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-val" id="p-slots">0</div>
+            <div class="stat-mini-label">邀请名额</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-val" id="p-claimed">0</div>
+            <div class="stat-mini-label">累计领取</div>
+          </div>
+        </div>
+        <div style="height:14px"></div>
+        <div class="card-title">我的推荐链接</div>
+        <div class="ref-box" style="margin-top:10px">
+          <div class="ref-link-text" id="refLink">连接钱包后生成</div>
+          <button class="btn-sm" onclick="copyRefLink()">复制</button>
+        </div>
+        <p style="font-size:11px;color:var(--muted);text-align:center;font-family:'Space Mono',monospace">L1 +3% · L2 +2% · L3 +1%</p>
+        <div style="height:14px"></div>
+        <button class="btn-outline" onclick="buySlots()" style="font-size:13px;padding:12px">购买邀请名额（0.001 BNB = 3个）</button>
+      </div>
+
+      <!-- 领取记录 -->
+      <div class="card">
+        <div class="card-title">领取记录</div>
+        <div id="claimRecords" style="margin-top:14px">
+          <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">加载中...</div>
+        </div>
+      </div>
+
+      <!-- 销毁记录 -->
+      <div class="card">
+        <div class="card-title">ONE 销毁记录</div>
+        <div id="burnRecords" style="margin-top:14px">
+          <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">加载中...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ 任务 ══ -->
+  <div class="page" id="page-tasks">
+    <div style="padding-top:20px">
+      <div class="card">
+        <div class="card-title">任务奖励中心</div>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px;margin-bottom:16px;line-height:1.7">完成任务提交截图/链接，DEV审核通过后可领取 ONE 奖励。</p>
+
+        <div class="banner" id="taskClaimBanner" style="display:none;margin-bottom:14px">
+          <div class="banner-text">🎁 待领取：<strong id="taskClaimAmt">0</strong> ONE</div>
+          <button class="btn-sm" onclick="claimTaskReward()">付Gas领取</button>
+        </div>
+
+        <div class="task-card">
+          <div class="task-header"><span class="task-name">📱 X（Twitter）发推文</span><span class="task-reward">+100 ONE</span></div>
+          <div class="task-desc">发布包含项目标签的推文，提交推文链接</div>
+          <div id="task-x_post-status" class="task-status status-none">未提交</div>
+          <textarea class="task-textarea" id="task-x_post-input" placeholder="粘贴推文链接 https://x.com/..."></textarea>
+          <button class="btn-sm" style="margin-top:8px;width:100%;text-align:center" onclick="submitTask('x_post')">提交审核</button>
+        </div>
+
+        <div class="task-card">
+          <div class="task-header"><span class="task-name">🟡 币安广场发帖</span><span class="task-reward">+200 ONE</span></div>
+          <div class="task-desc">在币安广场发布项目介绍帖</div>
+          <div id="task-binance_post-status" class="task-status status-none">未提交</div>
+          <textarea class="task-textarea" id="task-binance_post-input" placeholder="粘贴帖子链接或描述"></textarea>
+          <button class="btn-sm" style="margin-top:8px;width:100%;text-align:center" onclick="submitTask('binance_post')">提交审核</button>
+        </div>
+
+        <div class="task-card">
+          <div class="task-header"><span class="task-name">💬 朋友圈/社群分享</span><span class="task-reward">+100 ONE</span></div>
+          <div class="task-desc">在微信朋友圈或社群分享项目截图</div>
+          <div id="task-wechat_post-status" class="task-status status-none">未提交</div>
+          <textarea class="task-textarea" id="task-wechat_post-input" placeholder="描述分享内容并附截图说明"></textarea>
+          <button class="btn-sm" style="margin-top:8px;width:100%;text-align:center" onclick="submitTask('wechat_post')">提交审核</button>
+        </div>
+
+        <div class="task-card">
+          <div class="task-header"><span class="task-name">📣 社群宣发</span><span class="task-reward">+150 ONE</span></div>
+          <div class="task-desc">在加密社群推广项目</div>
+          <div id="task-community-status" class="task-status status-none">未提交</div>
+          <textarea class="task-textarea" id="task-community-input" placeholder="说明在哪个社群宣发，附截图链接"></textarea>
+          <button class="btn-sm" style="margin-top:8px;width:100%;text-align:center" onclick="submitTask('community')">提交审核</button>
+        </div>
+
+        <div class="task-card">
+          <div class="task-header"><span class="task-name">🎙 参加直播</span><span class="task-reward">+300 ONE</span></div>
+          <div class="task-desc">参加项目官方直播，DEV核实</div>
+          <div id="task-live_event-status" class="task-status status-none">未提交</div>
+          <textarea class="task-textarea" id="task-live_event-input" placeholder="填写参与直播时间和钱包地址"></textarea>
+          <button class="btn-sm" style="margin-top:8px;width:100%;text-align:center" onclick="submitTask('live_event')">提交审核</button>
+        </div>
+
+        <div class="task-card">
+          <div class="task-header"><span class="task-name">🤝 参加线下会议</span><span class="task-reward">+500 ONE</span></div>
+          <div class="task-desc">参加线下活动，DEV核实</div>
+          <div id="task-meetup-status" class="task-status status-none">未提交</div>
+          <textarea class="task-textarea" id="task-meetup-input" placeholder="填写活动名称和参与时间"></textarea>
+          <button class="btn-sm" style="margin-top:8px;width:100%;text-align:center" onclick="submitTask('meetup')">提交审核</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 社区 ══ -->
+  <div class="page" id="page-community">
+    <div style="padding-top:20px">
+      <div class="card">
+        <div class="card-title">全网数据</div>
+        <div class="global-grid" style="margin-top:14px">
+          <div class="global-stat"><div class="global-val" id="g-users">—</div><div class="global-label">总用户</div></div>
+          <div class="global-stat"><div class="global-val" id="g-one">—</div><div class="global-label">ONE流通</div></div>
+          <div class="global-stat"><div class="global-val" id="g-two">—</div><div class="global-label">TWO流通</div></div>
+          <div class="global-stat"><div class="global-val" id="g-bnb">—</div><div class="global-label">累计BNB</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">推广排行榜 TOP 20</div>
+        <div id="leaderboard" style="margin-top:14px">
+          <div style="text-align:center;padding:30px;color:var(--muted)">
+            <div style="font-size:32px;margin-bottom:10px">🏆</div>
+            <div style="font-size:13px">排行榜即将开放</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">最新加入</div>
+        <div id="recentUsers" style="margin-top:14px">
+          <div style="text-align:center;padding:30px;color:var(--muted)">
+            <div style="font-size:32px;margin-bottom:10px">⛏</div>
+            <div style="font-size:13px">成为第一批矿工</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 底部导航 -->
+<div class="tab-bar">
+  <button class="tab-item active" onclick="switchTab('home',this)"><span class="tab-icon">⛏</span>挖矿</button>
+  <button class="tab-item" onclick="switchTab('trade',this)"><span class="tab-icon">💱</span>交易</button>
+  <button class="tab-item" onclick="switchTab('profile',this)"><span class="tab-icon">👤</span>我的</button>
+  <button class="tab-item" onclick="switchTab('tasks',this)"><span class="tab-icon">📋</span>任务</button>
+  <button class="tab-item" onclick="switchTab('community',this)"><span class="tab-icon">🏆</span>社区</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 配置 ──────────────────────────────────────────────
+const CONFIG = {
+  ONE_ADDRESS:     '0x3c17257276741e57B5de4cb37e6080aaaa014b28',
+  TWO_ADDRESS:     '0x7535FD6d84a3d121c389b734b44e847C14e42cf8',
+  POOL_ADDRESS:    '0x9F2F0c3A7886486a3e338A7A6CBda985b39E5702',
+  PRESALE_ADDRESS: '0x67f9ecb4af04252275249Ae69A3616DF5F5cb0cc',
+  BACKEND_URL:     'https://your-backend.railway.app',
+  PANCAKE_ROUTER:  '0x10ED43C718714eb63d5aA57B78B54704E256024E',
+  PRICE_PER_BNB:   21000,
+  CLAIM_FEE:       '0.0005',
+  CHAIN_ID:        97,
+};
+
+const BADGE_INFO = [
+  { icon:'🔘', name:'暂无勋章', desc:'邀请5位好友解锁天使勋章' },
+  { icon:'🌟', name:'天使',     desc:'已邀请5位好友' },
+  { icon:'🏅', name:'大使',     desc:'已邀请20位好友' },
+  { icon:'👑', name:'超级大使', desc:'已邀请50位好友' },
+  { icon:'💎', name:'传奇',     desc:'已邀请100位好友' },
+];
+
+let userAddr = null, claimTimer = null, userData = {}, twoPrice = 0;
+
+// ── 工具 ──────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const fmt = (n, d=2) => {
+  if (!n || n === '0') return '0';
+  const v = typeof n === 'string' ? parseFloat(n) : n;
+  if (v >= 1e9) return (v/1e9).toFixed(1) + 'B';
+  if (v >= 1e6) return (v/1e6).toFixed(1) + 'M';
+  if (v >= 1000) return (v/1000).toFixed(1) + 'K';
+  return v.toFixed(d);
+};
+const fmtWei = (hex, d=2) => {
+  if (!hex || hex === '0x') return '0';
+  try { return fmt(Number(BigInt(hex)) / 1e18, d); } catch { return '0'; }
+};
+const showToast = (msg, type='', dur=2500) => {
+  const t = $('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', dur);
+};
+const getReferrer = () => new URLSearchParams(window.location.search).get('ref');
+
+// ── Tab切换 ───────────────────────────────────────────
+function switchTab(tab, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  $('page-' + tab).classList.add('active');
+  el.classList.add('active');
+  if (tab === 'community') loadCommunity();
+  if (tab === 'tasks' && userAddr) loadUserTasks();
+  if (tab === 'trade') loadPrice();
+  if (tab === 'profile' && userAddr) loadRecords();
+}
+
+function switchTradeTab(tab, el) {
+  document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  $('trade-buy').style.display = tab === 'buy' ? 'block' : 'none';
+  $('trade-sell').style.display = tab === 'sell' ? 'block' : 'none';
+}
+
+// ── 连接钱包 ──────────────────────────────────────────
+async function connectWallet() {
+  if (!window.ethereum) { showWalletModal(); return; }
+  try {
+    const accounts = await window.ethereum.request({ method:'eth_requestAccounts' });
+    userAddr = accounts[0];
+    const chainId = parseInt(await window.ethereum.request({ method:'eth_chainId' }), 16);
+    if (chainId !== CONFIG.CHAIN_ID) { await switchToChain(); return; }
+    onConnected();
+  } catch(e) { showToast('连接失败', 'error'); }
+}
+
+async function switchToChain() {
+  const hex = '0x' + CONFIG.CHAIN_ID.toString(16);
+  try {
+    await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId:hex}] });
+    connectWallet();
+  } catch(e) {
+    if (e.code === 4902) {
+      try {
+        await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{
+          chainId:'0x61', chainName:'BSC Testnet',
+          nativeCurrency:{name:'tBNB',symbol:'tBNB',decimals:18},
+          rpcUrls:['https://data-seed-prebsc-1-s1.binance.org:8545'],
+          blockExplorerUrls:['https://testnet.bscscan.com']
+        }]});
+        connectWallet();
+      } catch {}
+    }
+  }
+}
+
+function onConnected() {
+  const btn = $('btnConnect');
+  btn.textContent = userAddr.slice(0,6) + '...' + userAddr.slice(-4);
+  btn.className = 'btn-connect connected';
+  $('homeContent').classList.remove('locked');
+  $('connectPrompt').style.display = 'none';
+  $('btnClaim').disabled = false;
+  $('btnBuy').disabled = false;
+
+  const refUrl = location.origin + location.pathname + '?ref=' + userAddr;
+  $('refLink').textContent = refUrl;
+
+  const ref = getReferrer();
+  if (ref && ref.toLowerCase() !== userAddr.toLowerCase()) {
+    $('referrerTag').style.display = 'inline-flex';
+    $('referrerAddr').textContent = ref.slice(0,6) + '...' + ref.slice(-4);
+  }
+
+  refreshData();
+  setInterval(refreshData, 15000);
+  startClaimCountdown();
+  loadPrice();
+}
+
+// ── 链上读取 ──────────────────────────────────────────
+async function ethCall(to, data) {
+  return await window.ethereum.request({ method:'eth_call', params:[{to, data},'latest'] });
+}
+async function balanceOf(token, addr) {
+  const data = '0x70a08231' + addr.toLowerCase().replace('0x','').padStart(64,'0');
+  const r = await ethCall(token, data);
+  return r && r !== '0x' ? (Number(BigInt(r)) / 1e18) : 0;
+}
+async function totalSupply(token) {
+  const r = await ethCall(token, '0x18160ddd');
+  return r && r !== '0x' ? (Number(BigInt(r)) / 1e18) : 0;
+}
+async function getUserInfo(addr) {
+  const data = '0x6386c1c7' + addr.toLowerCase().replace('0x','').padStart(64,'0');
+  const r = await ethCall(CONFIG.POOL_ADDRESS, data);
+  if (!r || r === '0x' || r.length < 66) return null;
+  const hex = r.replace('0x','');
+  const bn = i => BigInt('0x' + hex.slice(i*64, i*64+64));
+  return {
+    referrer:          '0x' + hex.slice(24, 64),
+    oneBalance:        Number(bn(1)) / 1e18,
+    twoBalance:        Number(bn(2)) / 1e18,
+    inviteSlots:       Number(bn(3)),
+    directCount:       Number(bn(4)),
+    pendingTWO:        Number(bn(5)) / 1e18,
+    pendingTaskReward: Number(bn(6)) / 1e18,
+    nextClaim:         Number(bn(7)),
+    badge:             Number(bn(8)),
+    registered:        bn(9) === 1n,
+    canClaim:          bn(10) === 1n,
+    powerFrozen:       bn(11) === 1n,
+  };
+}
+
+async function refreshData() {
+  if (!userAddr || !window.ethereum) return;
+  try {
+    const [oneBal, twoBal, oneSupply, info] = await Promise.all([
+      balanceOf(CONFIG.ONE_ADDRESS, userAddr),
+      balanceOf(CONFIG.TWO_ADDRESS, userAddr),
+      totalSupply(CONFIG.ONE_ADDRESS),
+      getUserInfo(userAddr),
+    ]);
+    const d = {
+      oneBalance: oneBal, twoBalance: twoBal, globalPower: oneSupply,
+      inviteSlots:  info?.inviteSlots  ?? 0,
+      directCount:  info?.directCount  ?? 0,
+      pendingTWO:   info?.pendingTWO   ?? 0,
+      pendingTaskReward: info?.pendingTaskReward ?? 0,
+      nextClaim:    info?.nextClaim    ?? 0,
+      badge:        info?.badge        ?? 0,
+      canClaim:     info?.canClaim     ?? false,
+      powerFrozen:  info?.powerFrozen  ?? false,
+    };
+    userData = d;
+    updateUI(d);
+
+    // 后端加载（可选）
+    fetch(`${CONFIG.BACKEND_URL}/api/user/${userAddr}`).then(r=>r.json()).then(j=>{
+      if (j.success && j.data) loadCommunityStats(j.data);
+    }).catch(()=>{});
+  } catch(e) { console.warn('refreshData error', e); }
+}
+
+function updateUI(d) {
+  // 余额
+  $('oneBal').textContent = fmt(d.oneBalance);
+  $('twoBal').textContent = fmt(d.twoBalance);
+  $('twoBalUsd').textContent = (d.twoBalance * twoPrice).toFixed(2);
+  $('sellMaxBal').textContent = fmt(d.twoBalance, 4);
+  $('pendingTwo').textContent = fmt(d.pendingTWO, 4);
+
+  // 算力
+  const pct = d.globalPower > 0 ? (d.oneBalance / d.globalPower * 100) : 0;
+  $('powerPct').textContent = pct.toFixed(3) + '%';
+  $('powerBar').style.width = Math.min(pct, 100) + '%';
+  $('myPowerDisplay').textContent = fmt(d.oneBalance);
+  $('globalPower').textContent = fmt(d.globalPower);
+
+  // 勋章
+  const bi = BADGE_INFO[d.badge] || BADGE_INFO[0];
+  $('badgeIcon').textContent = bi.icon;
+  $('badgeName').textContent = bi.name;
+  $('badgeDesc').textContent = bi.desc;
+
+  // 里程碑
+  const dc = d.directCount;
+  [['m5',5,500],['m20',20,3000],['m50',50,10000],['m100',100,30000]].forEach(([id,n,r])=>{
+    const el = $(id);
+    if (dc >= n) { el.textContent = '✅'; el.className = 'milestone-done'; }
+    else { el.textContent = `还差${n-dc}人`; el.className = dc >= Math.floor(n/2) ? 'milestone-next' : 'milestone-lock'; }
+  });
+
+  // 推广
+  $('p-direct').textContent = d.directCount;
+  $('p-slots').textContent  = d.inviteSlots;
+
+  // 冻结横幅
+  $('freezeBanner').style.display = d.powerFrozen ? 'block' : 'none';
+
+  // 任务奖励横幅
+  if (d.pendingTaskReward > 0) {
+    $('taskBanner').style.display = 'flex';
+    $('taskClaimBanner').style.display = 'flex';
+    $('taskBannerAmt').textContent = fmt(d.pendingTaskReward, 1);
+    $('taskClaimAmt').textContent  = fmt(d.pendingTaskReward, 1);
+  }
+
+  // 按钮状态
+  $('btnClaim').disabled = !d.canClaim;
+
+  // 倒计时
+  updateCountdown(d.nextClaim * 1000);
+}
+
+// ── 倒计时 ────────────────────────────────────────────
+function startClaimCountdown() {
+  if (claimTimer) clearInterval(claimTimer);
+  claimTimer = setInterval(() => {
+    const nextTs = (userData.nextClaim || 0) * 1000;
+    updateCountdown(nextTs);
+  }, 1000);
+}
+
+function updateCountdown(nextTs) {
+  const diff = nextTs - Date.now();
+  const el = $('claimCountdown');
+  if (diff <= 0) {
+    el.innerHTML = '<span class="countdown-ready">可以领取！</span>';
+    if (userData.canClaim) $('btnClaim').disabled = false;
+  } else {
+    const h = Math.floor(diff/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    const s = Math.floor((diff%60000)/1000);
+    el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+}
+
+// ── 价格 ──────────────────────────────────────────────
+async function loadPrice() {
+  try {
+    // 通过PancakeSwap API获取TWO价格（测试网无真实价格，显示0）
+    const r = await fetch(`https://api.pancakeswap.info/api/v2/tokens/${CONFIG.TWO_ADDRESS}`).catch(()=>null);
+    if (r && r.ok) {
+      const j = await r.json();
+      twoPrice = parseFloat(j.data?.price || 0);
+    }
+    if (twoPrice > 0) {
+      $('twoPrice').textContent = twoPrice < 0.001 ? twoPrice.toFixed(6) : twoPrice.toFixed(4);
+      $('tradePriceMain').textContent = twoPrice < 0.001 ? twoPrice.toFixed(6) : twoPrice.toFixed(4);
+      $('priceTag').style.display = 'flex';
+    } else {
+      $('tradePriceMain').textContent = '—';
+      $('swapRate').textContent = '测试网 · 添加流动性后显示价格';
+    }
+    $('twoBalUsd').textContent = (parseFloat(userData.twoBalance || 0) * twoPrice).toFixed(2);
+  } catch {}
+}
+
+// ── 交易预览 ──────────────────────────────────────────
+function calcBuyOut() {
+  const bnb = parseFloat($('swapBuyIn').value) || 0;
+  const out = bnb / (twoPrice || 1) * 0.9;
+  $('swapBuyOut').textContent = bnb > 0 ? (twoPrice > 0 ? `约 ${fmt(out, 2)} TWO（扣税后）` : '添加流动性后显示') : '输入BNB数量预览';
+}
+function calcSellOut() {
+  const two = parseFloat($('swapSellIn').value) || 0;
+  const out = two * (twoPrice || 0) * 0.85;
+  $('swapSellOut').textContent = two > 0 ? (twoPrice > 0 ? `约 ${out.toFixed(4)} BNB（扣税后）` : '添加流动性后显示') : '输入TWO数量预览';
+}
+function setMaxSell() {
+  $('swapSellIn').value = userData.twoBalance || 0;
+  calcSellOut();
+}
+
+// ── 跳转PancakeSwap ───────────────────────────────────
+function doSwapBuy() {
+  const url = `https://pancakeswap.finance/swap?outputCurrency=${CONFIG.TWO_ADDRESS}&chain=bscTestnet`;
+  window.open(url, '_blank');
+}
+function doSwapSell() {
+  const url = `https://pancakeswap.finance/swap?inputCurrency=${CONFIG.TWO_ADDRESS}&chain=bscTestnet`;
+  window.open(url, '_blank');
+}
+
+// ── 购买ONE预览 ───────────────────────────────────────
+function updateBuyPreview() {
+  const bnb = parseFloat($('buyAmount').value) || 0;
+  const p = $('buyPreview');
+  if (bnb >= 0.01) {
+    p.textContent = `预计获得 ${(bnb * CONFIG.PRICE_PER_BNB).toLocaleString()} ONE`;
+    p.style.color = 'var(--c3)';
+  } else {
+    p.textContent = '最低购买 0.01 BNB';
+    p.style.color = 'var(--muted)';
+  }
+}
+
+// ── 交易操作 ──────────────────────────────────────────
+async function doClaim() {
+  if (!userAddr) return;
+  try {
+    const feeWei = '0x' + BigInt(Math.round(0.0005 * 1e18)).toString(16);
+    await window.ethereum.request({ method:'eth_sendTransaction',
+      params:[{ from:userAddr, to:CONFIG.POOL_ADDRESS, value:feeWei }]
+    });
+    showToast('⚡ 领取已提交！', 'success');
+    $('btnClaim').disabled = true;
+    setTimeout(refreshData, 8000);
+  } catch(e) { showToast('领取失败：' + (e.message || '用户取消'), 'error'); }
+}
+
+async function doBuy() {
+  if (!userAddr) return;
+  const bnb = parseFloat($('buyAmount').value);
+  if (!bnb || bnb < 0.01) { showToast('最低购买 0.01 BNB', 'error'); return; }
+  try {
+    const weiHex = '0x' + BigInt(Math.round(bnb * 1e18)).toString(16);
+    const ref = getReferrer();
+    // 如果有推荐人，调用 buyWithReferrer，否则直接转账
+    if (ref && ref !== userAddr) {
+      // 编码 buyWithReferrer(address) 调用
+      const sel = '0x65fc3873';
+      const padRef = ref.toLowerCase().replace('0x','').padStart(64,'0');
+      await window.ethereum.request({ method:'eth_sendTransaction',
+        params:[{ from:userAddr, to:CONFIG.PRESALE_ADDRESS, value:weiHex, data:sel+padRef }]
+      });
+    } else {
+      await window.ethereum.request({ method:'eth_sendTransaction',
+        params:[{ from:userAddr, to:CONFIG.PRESALE_ADDRESS, value:weiHex }]
+      });
+    }
+    showToast('✅ 购买成功！', 'success');
+    setTimeout(refreshData, 8000);
+  } catch(e) { showToast('购买失败：' + (e.message || '用户取消'), 'error'); }
+}
+
+async function buySlots() {
+  if (!userAddr) return;
+  try {
+    const feeWei = '0x' + BigInt(Math.round(0.001 * 1e18)).toString(16);
+    await window.ethereum.request({ method:'eth_sendTransaction',
+      params:[{ from:userAddr, to:CONFIG.POOL_ADDRESS, value:feeWei }]
+    });
+    showToast('✅ 购买成功 +3 邀请名额！', 'success');
+    setTimeout(refreshData, 6000);
+  } catch(e) { showToast('失败：' + (e.message || '用户取消'), 'error'); }
+}
+
+async function claimTaskReward() {
+  if (!userAddr) return;
+  try {
+    await window.ethereum.request({ method:'eth_sendTransaction',
+      params:[{ from:userAddr, to:CONFIG.POOL_ADDRESS, data:'0xd172b0c0' }]
+    });
+    showToast('🎁 任务奖励领取成功！', 'success');
+    $('taskBanner').style.display = 'none';
+    $('taskClaimBanner').style.display = 'none';
+    setTimeout(refreshData, 8000);
+  } catch(e) { showToast('领取失败', 'error'); }
+}
+
+function copyRefLink() {
+  const link = $('refLink').textContent;
+  navigator.clipboard.writeText(link)
+    .then(() => showToast('✅ 推荐链接已复制！', 'success'))
+    .catch(() => showToast('请手动复制', 'error'));
+}
+
+// ── 任务提交 ──────────────────────────────────────────
+async function submitTask(type) {
+  if (!userAddr) { showToast('请先连接钱包', 'error'); return; }
+  const content = $('task-'+type+'-input').value.trim();
+  if (!content) { showToast('请填写内容', 'error'); return; }
+  try {
+    const r = await fetch(`${CONFIG.BACKEND_URL}/api/tasks/submit`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ address:userAddr, taskType:type, content })
+    });
+    const j = await r.json();
+    if (j.success) {
+      showToast('✅ 提交成功，等待审核', 'success');
+      $('task-'+type+'-status').textContent = '⏳ 审核中';
+      $('task-'+type+'-status').className = 'task-status status-pending';
+    } else { showToast('❌ ' + (j.error || '提交失败'), 'error'); }
+  } catch { showToast('网络错误，请稍后重试', 'error'); }
+}
+
+async function loadUserTasks() {
+  if (!userAddr) return;
+  try {
+    const r = await fetch(`${CONFIG.BACKEND_URL}/api/tasks/user/${userAddr}`);
+    const j = await r.json();
+    if (!j.success) return;
+    j.data.tasks.forEach(t => {
+      const el = $('task-'+t.task_type+'-status');
+      if (!el) return;
+      const map = { approved:['✅ 已通过','status-approved'], pending:['⏳ 审核中','status-pending'], rejected:['❌ 未通过','status-rejected'] };
+      const [txt, cls] = map[t.status] || ['未提交','status-none'];
+      el.textContent = txt; el.className = 'task-status ' + cls;
+    });
+  } catch {}
+}
+
+// ── 记录加载 ──────────────────────────────────────────
+async function loadRecords() {
+  try {
+    const r = await fetch(`${CONFIG.BACKEND_URL}/api/user/${userAddr}/records`);
+    const j = await r.json();
+    if (!j.success) throw new Error();
+
+    const claimHtml = (j.data.claims || []).slice(0,10).map(c => `
+      <div class="record-row">
+        <span class="record-type">领取</span>
+        <span class="record-amount" style="color:var(--c3)">+${fmt(c.twoEarned,2)} TWO</span>
+        <span class="record-time">${new Date(c.ts*1000).toLocaleDateString('zh')}</span>
+      </div>`).join('') || '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">暂无记录</div>';
+
+    const burnHtml = (j.data.burns || []).slice(0,10).map(b => `
+      <div class="record-row">
+        <span class="record-type">销毁</span>
+        <span class="record-amount" style="color:var(--red)">-${fmt(b.oneBurned,2)} ONE</span>
+        <span class="record-time">${new Date(b.ts*1000).toLocaleDateString('zh')}</span>
+      </div>`).join('') || '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">暂无记录</div>';
+
+    $('claimRecords').innerHTML = claimHtml;
+    $('burnRecords').innerHTML = burnHtml;
+    $('p-claimed').textContent = j.data.totalClaims || 0;
+  } catch {
+    $('claimRecords').innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">后端连接后显示</div>';
+    $('burnRecords').innerHTML  = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">后端连接后显示</div>';
+  }
+}
+
+// ── 社区数据 ──────────────────────────────────────────
+async function loadCommunity() {
+  try {
+    const [stats, lb, recent] = await Promise.all([
+      fetch(`${CONFIG.BACKEND_URL}/api/stats`).then(r=>r.json()),
+      fetch(`${CONFIG.BACKEND_URL}/api/leaderboard`).then(r=>r.json()),
+      fetch(`${CONFIG.BACKEND_URL}/api/users/recent`).then(r=>r.json()),
+    ]);
+    if (stats.success) {
+      const d = stats.data;
+      $('g-users').textContent = d.totalUsers || '—';
+      $('g-one').textContent   = d.oneSupply ? fmt(parseFloat(d.oneSupply)) : '—';
+      $('g-two').textContent   = d.twoSupply ? fmt(parseFloat(d.twoSupply)) : '—';
+      $('g-bnb').textContent   = d.bnbCollected ? parseFloat(d.bnbCollected).toFixed(2)+' BNB' : '—';
+      $('h-users').textContent = d.totalUsers || '—';
+      $('h-one').textContent   = d.oneSupply ? fmt(parseFloat(d.oneSupply)) : '—';
+      $('h-two').textContent   = d.twoSupply ? fmt(parseFloat(d.twoSupply)) : '—';
+    }
+    if (lb.success && lb.data.length) {
+      const icons = ['','gold-rank','silver-rank','bronze-rank'];
+      $('leaderboard').innerHTML = lb.data.map((u,i) => `
+        <div class="rank-row">
+          <div class="rank-num ${icons[i+1]||''}">${u.rank}</div>
+          <div class="rank-addr">${u.address}</div>
+          <span class="rank-badge">${u.badge}</span>
+          <div class="rank-count">${u.directCount} 人</div>
+        </div>`).join('');
+    }
+    if (recent.success && recent.data.length) {
+      const badgeIcons = ['','🌟','🏅','👑','💎'];
+      $('recentUsers').innerHTML = recent.data.map(u => `
+        <div class="rank-row">
+          <div style="font-size:20px">${badgeIcons[u.badge]||'👤'}</div>
+          <div class="rank-addr">${u.address.slice(0,6)}...${u.address.slice(-4)}</div>
+          <div style="font-size:11px;color:var(--muted)">${new Date(u.registered_at*1000).toLocaleDateString('zh')}</div>
+        </div>`).join('');
+    }
+  } catch {}
+}
+
+// ── 钱包选择弹窗 ──────────────────────────────────────
+function showWalletModal() {
+  let m = $('walletModal');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'walletModal';
+    m.className = 'modal-overlay';
+    m.innerHTML = `
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title">选择钱包</div>
+        <div class="modal-sub">请在钱包 App 内置浏览器中打开本页面</div>
+        <div class="wallet-option" onclick="openInOKX()">
+          <div class="wallet-icon">⬛</div>
+          <div class="wallet-info"><div class="wallet-name">OKX 钱包</div><div class="wallet-desc">推荐 · 在OKX App内置浏览器打开</div></div>
+          <div class="wallet-arrow">→</div>
+        </div>
+        <div class="wallet-option" onclick="openInTP()">
+          <div class="wallet-icon">🔷</div>
+          <div class="wallet-info"><div class="wallet-name">TokenPocket</div><div class="wallet-desc">在TP内置浏览器打开</div></div>
+          <div class="wallet-arrow">→</div>
+        </div>
+        <div class="wallet-option" onclick="openInMetaMask()">
+          <div class="wallet-icon">🦊</div>
+          <div class="wallet-info"><div class="wallet-name">MetaMask</div><div class="wallet-desc">在MetaMask内置浏览器打开</div></div>
+          <div class="wallet-arrow">→</div>
+        </div>
+        <div style="margin-top:12px">
+          <button onclick="copyPageLink()" class="btn-outline" style="margin-bottom:10px">📋 复制页面链接</button>
+          <button onclick="closeWalletModal()" style="width:100%;padding:14px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:12px;cursor:pointer;font-size:14px;font-family:'Space Grotesk',sans-serif">取消</button>
+        </div>
+      </div>`;
+    m.addEventListener('click', e => { if(e.target===m) closeWalletModal(); });
+    document.body.appendChild(m);
+  }
+  m.style.display = 'flex';
+}
+function closeWalletModal() { const m=$('walletModal'); if(m) m.style.display='none'; }
+function openInOKX() { window.location.href = `okx://wallet/dapp/url?dappUrl=${encodeURIComponent(location.href)}`; setTimeout(()=>window.open('https://www.okx.com/download','_blank'),2000); }
+function openInTP()  { window.location.href = `tpdapp://url?params={"url":"${encodeURIComponent(location.href)}","chain":"BSC"}`; setTimeout(()=>window.open('https://www.tokenpocket.pro/zh/download/app','_blank'),2000); }
+function openInMetaMask() { const u=location.href.replace('https://',''); window.location.href=`metamask://open?url=${encodeURIComponent('https://'+u)}`; setTimeout(()=>window.open('https://metamask.io/download/','_blank'),2000); }
+function copyPageLink() { navigator.clipboard.writeText(location.href).then(()=>{showToast('✅ 链接已复制！','success');closeWalletModal();}); }
+
+// ── 钱包事件 ──────────────────────────────────────────
+if (window.ethereum) {
+  window.ethereum.on('accountsChanged', a => { if(a.length) { userAddr=a[0]; onConnected(); } else location.reload(); });
+  window.ethereum.on('chainChanged', () => location.reload());
+  window.ethereum.request({ method:'eth_accounts' }).then(a => { if(a.length){ userAddr=a[0]; onConnected(); } });
+}
+
+// ── 矩阵雨（背景装饰）────────────────────────────────
+(function(){
+  const hero = document.querySelector('.hero');
+  if (!hero) return;
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:absolute;inset:0;opacity:0.04;pointer-events:none;border-radius:inherit;z-index:0';
+  hero.style.position = 'relative';
+  hero.prepend(canvas);
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width=hero.offsetWidth; canvas.height=hero.offsetHeight; }
+  resize();
+  const chars='01₿ΞONETWO◈⛏'.split('');
+  const cols = Math.floor(canvas.width/18);
+  const drops = Array(cols).fill(0);
+  setInterval(()=>{
+    ctx.fillStyle='rgba(8,7,15,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#7B2FFF'; ctx.font='13px Space Mono,monospace';
+    drops.forEach((y,i)=>{ ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*18, y); drops[i]=y>canvas.height&&Math.random()>0.975?0:y+18; });
+  }, 80);
+  window.addEventListener('resize', resize);
+})();
+</script>
+</body>
+</html>
